@@ -68,7 +68,7 @@ for i in range(rows):
     if product.editorial_reviews:
         data.desc[i] = product.editorial_reviews[0].encode("ascii","ignore")
     data.am_isbn[i] = product.isbn
-    data['amazon page'][i] = product.offer_url.replace("/?tag="+Credentials.AMAZON_ASSOC_TAG,"")
+    data['amazon page'][i] = product.offer_url.replace("/?tag="+Creds.AMAZON_ASSOC_TAG,"")
     product = None
     sleep(.5)    
 
