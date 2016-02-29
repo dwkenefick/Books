@@ -12,11 +12,11 @@ import xmltodict
 import json
 from time import sleep
 
-import pandas as pd
-import numpy as np
-import os
+#import pandas as pd
+#import numpy as np
+#import os
 
-import Creds
+#import Creds
 
 ##########################
 ### GOODREADS ANALYSIS ###
@@ -135,7 +135,7 @@ class goodreads_session():
 ##################
 #### Analysis ####
 ##################
-
+"""
 # path
 data_path = os.path.normpath(Creds.root_path + r"\In\for_goodreads.csv")
 out_path = os.path.normpath(Creds.root_path + r"\Out\goodreads_out.xlsx")
@@ -163,7 +163,7 @@ for i in range(rows):
 data["short"]=data["short"].str.decode("ascii","ignore").str.encode("ascii","ignore")
 data["desc"]=data["desc"].str.decode("ascii","ignore").str.encode("ascii","ignore")
 data.to_excel(out_path,index=False)   
-
+"""
 """
 # testing variables
 isbn = "0809052172"
