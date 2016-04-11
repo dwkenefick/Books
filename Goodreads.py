@@ -131,6 +131,34 @@ class goodreads_session():
     def get_average_score(self,isbn):
         return self.get_book_stats(isbn)['books'][0]['average_rating']
 
+    def get_review_id_by_book_and_user(self,book_id,user_id):
+        response = self.session.get('https://www.goodreads.com/review/show_by_user_and_book.xml'+"?book_id="+book_id+"&key="+self.consumer_key+'&user_id='+user_id)
+        sleep(self.sleep_time)
+        data_dict = xmltodict.parse(response.content)
+        
+        if response.status_code != 200:
+            raise Exception("Bad response code: "+ str(response.status_code))        
+        
+        return data_dict['GoodreadsResponse']['review']['id']
+    
+    def post_review(self, book_id, review_text, rating, formatted_date):
+        dat = {'book_id':book_id,'review[review]':review_text,'review[rating]':rating,'review[read_at]':formatted_date}
+        response = self.session.post('https://www.goodreads.com/review.xml', dat)
+        sleep(self.sleep_time)
+        
+        # if response is fine, return 0.  Otherwse return 1
+        return ((response.status_code != 201) and (response.status_code != 200))
+        
+
+    def edit_review(self,review_id,review_text,rating,formatted_date):
+        data = {'id':review_id,'review[review]':review_text,'review[rating]':rating,'review[read_at]':formatted_date}
+        response = self.session.post('https://www.goodreads.com/review/'+review_id+'.xml', data)
+        sleep(self.sleep_time)
+        if response.status_code != 200:
+            raise Exception("Bad response code: "+str(response.status_code))
+        else:
+            return 0        
+
 
 ##################
 #### Analysis ####
@@ -163,30 +191,46 @@ for i in range(rows):
 data["short"]=data["short"].str.decode("ascii","ignore").str.encode("ascii","ignore")
 data["desc"]=data["desc"].str.decode("ascii","ignore").str.encode("ascii","ignore")
 data.to_excel(out_path,index=False)   
+
 """
 """
 # testing variables
-isbn = "0809052172"
-rating = 3
-formatted_date = '2015-06-16'
+isbn = "145162168X"
+rating = '4'
+formatted_date = '2015-06-08'
 user_id = '20201225'
 #get my ID
 id = gr.get_auth_id()
-
+bid = gr.get_book_id_by_isbn(isbn)
 #add a book tothe shelf
 #result = gr.add_book_to_shelf("0307278247","read",isbn=True)
 
 #stats =gr.get_book_stats(isbn)
-avg_score = gr.get_average_score(isbn)
+#avg_score = gr.get_average_score(isbn)
+
+
+res = gr.post_review(bid,'',rating,formatted_date)
 """
-
-
-
 """
 # add review 
-data = {'book_id':id, r'review[review]':r"it was good"}
-response = session.post('https://www.goodreads.com/review.xml', data)
-print(response.status_code)
+#this works, but will not replace an exsisting review
+data = {'book_id':bid, 'review[review]':'it was good','review[rating]':'4','review[read_at]':'2015-05-25'}
+response = gr.session.post('https://www.goodreads.com/review.xml', data)
+
+# if the review already exsists, we need to:
+# 1. get the review id
+# 2. edit the review ID
+
+#get review ID
+if response.status_code == 422:
+    response = gr.session.get('https://www.goodreads.com/review/show_by_user_and_book.xml'+"?book_id="+bid+"&key="+gr.consumer_key+'&user_id='+id)
+    data_dict = xmltodict.parse(response.content)
+    review_id = data_dict['GoodreadsResponse']['review']['id']
+    review_id = gr.get_review__id_by_book_and_user(bid,user_id)
+    review_text = ''
+    result = gr.edit_review(review_id,review_text,rating,formatted_date)
+        
+    
 
 
 # get a review id
@@ -199,6 +243,6 @@ review_id = "1560626048"
 data = {'id':review_id, 'review[review]':"it was good"}
 response = session.put('https://www.goodreads.com/review/'+"1560626048"+'.xml', data)
 print(response.status_code)
+
+
 """
-
-

@@ -15,7 +15,7 @@ import Creds
 from Goodreads import goodreads_session
 
 # path
-data_path = os.path.normpath(Creds.root_path + r"\SQ.xlsx")
+data_path = os.path.normpath(Creds.root_path + r"\SQ.xlsm")
 out_path = os.path.normpath(Creds.root_path + r"\Python\Out\Books.xlsx")
 
 
@@ -32,7 +32,7 @@ amazon_connection = None
 gr = None
 
 # loop through data.  if unprocessed, call the requisite 
-for i in range(1,rows):
+for i in range(0,rows):
     # Amazon - get data if havent already
     if data['amazon processed'][i] != 1:
         
@@ -90,8 +90,40 @@ for i in range(1,rows):
                     oauth_access_token_secret = Creds.GOODREADS_MY_ACCESS_SECRET,
                 )
         # fill in data        
+        
+        #get average rating
         data.gr_avg_rating[i] = gr.get_average_score(data.am_isbn[i])
+        
+        # add to read shelf on GR
         result = gr.add_book_to_shelf(data.am_isbn[i],"read",isbn=True)
+        
+        #get the review number - make sure an int, then str to account for rating slike 4.5
+        rating = str(int(data['goodreads rating'][i]))
+        
+        #format the date        
+        dt = data['complete date'][i]
+        yr = str(dt.year)
+        day = str(dt.day)
+        if len(day) == 1:
+            day = '0'+day
+
+        month = str(dt.month)
+        if len(month) == 1:
+            month = '0'+month    
+            
+        formatted_date = yr+'-'+month+'-'+day
+        
+        # get the book ids for the reviews
+        book_id = gr.get_book_id_by_isbn(data.am_isbn[i])
+        
+        #try posting the review
+        if gr.post_review(book_id,'',rating,formatted_date):
+            #if it does not work, we need to edit the exsisting review
+            user_id = gr.get_auth_id()
+            rev_id = gr.get_review_id_by_book_and_user(book_id,user_id)
+            gr.edit_review(rev_id,'',rating,formatted_date)
+        
+        #finish processing
         data['goodreads processed'][i] = 1    
             
             
