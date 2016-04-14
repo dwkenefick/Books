@@ -11,12 +11,13 @@ To do:
 - Fix some issues with exclusively electronic books
 - update so the whole thing, database included, is in python/pandas.  
 
+
+
 Example Tuples:
-"the truth about how a greek city did a nuclear strike on high school mathematics"
-- The author of 300 gives his take on Pythagoras's Biography
 
-"there is one more than forty nine stories of which mr cadwallader shampoos the individuals carrying out his vision."
-- 50 shades of shampoo
 
-"Alvin E. Roth is one of the americas experts of high level intrigue and has been on some of the losing sides of romes glorious conquests"
-- Proffesor Roth's time-traveling career
+"the truth about how a greek city did a nuclear strike on high school mathematics" (The author of 300 gives his take on Pythagoras's Biography)
+
+"there is one more than forty nine stories of which mr cadwallader shampoos the individuals carrying out his vision." (50 shades of shampoo)
+
+"Alvin E. Roth is one of the americas experts of high level intrigue and has been on some of the losing sides of romes glorious conquests" (Proffesor Roth's time-traveling career)
