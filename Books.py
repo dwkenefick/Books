@@ -60,8 +60,12 @@ for i in range(0,rows):
         data.am_author[i] = product.get_attribute("Author").encode("ascii","ignore")
         data.list_price[i] = product.price_and_currency[0]
         data['amazon page'][i] = product.offer_url.replace("/?tag="+Creds.AMAZON_ASSOC_TAG,"")
-        data.am_isbn[i] = product.isbn
         
+        if product.isbn is not None:        
+            data.am_isbn[i] = product.isbn
+        else:
+            data.am_isbn[i] = product.eisbn
+            
         # some products do not have these - check
         if product._safe_get_element_text('OfferSummary.LowestUsedPrice.Amount') is not None:
             data.min_price[i] = min((int(product._safe_get_element_text('OfferSummary.LowestUsedPrice.Amount')) +399)/100 ,data.list_price[i])
